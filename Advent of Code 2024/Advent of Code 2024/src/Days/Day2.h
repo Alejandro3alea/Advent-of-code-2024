@@ -9,7 +9,6 @@ enum class SafeMethod {
 
 void SolveDay2Part1()
 {
-
 	std::ifstream file("data/Day 2/Data.txt");
 	if (!file || !file.is_open())
 	{
@@ -35,7 +34,7 @@ void SolveDay2Part1()
 			int diff = std::abs(prevNum - num);
 			if (diff > 3 || diff == 0)
 			{
-				isSafe = false; 
+				isSafe = false;
 				break;
 			}
 
@@ -75,7 +74,7 @@ void SolveDay2Part1()
 ///////////////////////////////////////////////////////////////////////////
 
 // Dynamic programming solution
-bool isSequenceValid(const std::vector<int32_t>& values, const int32_t prevIndex, 
+bool isSequenceValid(const std::vector<int32_t>& values, const int32_t prevIndex,
 	const int32_t currIndex, const bool skip, const SafeMethod method)
 {
 	if (currIndex == values.size())
@@ -86,8 +85,8 @@ bool isSequenceValid(const std::vector<int32_t>& values, const int32_t prevIndex
 	int32_t prevValue = values[prevIndex];
 	int32_t currValue = values[currIndex];
 	bool isNotValid = (method == SafeMethod::eAscending && prevValue <= currValue) ||
-					(method == SafeMethod::eDescending && prevValue >= currValue) ||
-					std::abs(prevValue - currValue) > 3;
+		(method == SafeMethod::eDescending && prevValue >= currValue) ||
+		std::abs(prevValue - currValue) > 3;
 	if (!isNotValid)
 	{
 		return isSequenceValid(values, currIndex, currIndex + 1, skip, method);
