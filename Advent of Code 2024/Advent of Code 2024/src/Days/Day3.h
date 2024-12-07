@@ -80,7 +80,7 @@ void SolveDay3Part1()
 
 			if (readingState == NumReadingState::eComplete)
 			{
-				totalSum += std::atoi(numberL.c_str()) * std::atoi(numberR.c_str());
+				totalSum += std::stoi(numberL) * std::stoi(numberR);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ void SolveDay3Part2()
 
 			if (readingState == NumReadingState::eComplete)
 			{
-				totalSum += std::atoi(numberL.c_str()) * std::atoi(numberR.c_str());
+				totalSum += std::stoi(numberL) * std::stoi(numberR);
 			}
 		}
 	}
