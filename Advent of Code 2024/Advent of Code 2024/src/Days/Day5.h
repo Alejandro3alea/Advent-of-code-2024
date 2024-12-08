@@ -122,6 +122,5 @@ void SolveDay5Part2()
 		}
 	}
 
-
 	std::cout << "The solution is " << totalSum << "!" << std::endl;
 }

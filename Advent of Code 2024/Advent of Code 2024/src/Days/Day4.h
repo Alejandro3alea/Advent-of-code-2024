@@ -1,24 +1,6 @@
 #pragma once
 #include "DaysCommon.h"
 
-struct Point
-{
-	int32_t x;
-	int32_t y;
-
-	Point& operator+=(const Point& rhs)
-	{
-		x += rhs.x;
-		y += rhs.y;
-
-		return *this;
-	}
-
-	bool IsInRangeOf(const std::vector<std::string>& letterSoup)
-	{
-		return y >= 0 && y < letterSoup.size() && x >= 0 && x < letterSoup[0].size();
-	}
-};
 
 ///////////////////////////////////////////////////////////////////////////
 ///
@@ -26,19 +8,19 @@ struct Point
 
 const std::array<uint8_t, 4> xmasLetters = { 'X', 'M', 'A', 'S' };
 
-const std::array<Point, 8> directions = { Point(-1, -1), Point(0, -1), Point(1, -1),
-										  Point(-1,  0),			   Point(1,  0),
-										  Point(-1,  1), Point(0,  1), Point(1,  1) };
+const std::array<Point2D, 8> directions = { Point2D(-1, -1), Point2D(0, -1), Point2D(1, -1),
+										  Point2D(-1,  0),			   Point2D(1,  0),
+										  Point2D(-1,  1), Point2D(0,  1), Point2D(1,  1) };
 
-const std::array<Point, 4> corners = {	Point(-1, -1), Point(1, -1),
-										Point(-1, 1), Point(1, 1),};
+const std::array<Point2D, 4> corners = {	Point2D(-1, -1), Point2D(1, -1),
+										Point2D(-1, 1), Point2D(1, 1),};
 
 
 ///////////////////////////////////////////////////////////////////////////
 ///
 ///////////////////////////////////////////////////////////////////////////
 
-bool IsInRange(const std::vector<std::string>& letterSoup, const Point& pos)
+bool IsInRange(const std::vector<std::string>& letterSoup, const Point2D& pos)
 {
 	return pos.y >= 0 && pos.y < letterSoup.size() && pos.x >= 0 && pos.x < letterSoup[0].size();
 }
@@ -52,7 +34,7 @@ uint32_t GetXmasCountFromPos(const std::vector<std::string>& letterSoup, const u
 	uint32_t totalCount = 0;
 	for (uint32_t i = 0; i < directions.size(); i++)
 	{
-		Point currPos(x, y);
+		Point2D currPos(x, y);
 		bool isValidXmas = true;
 		for (uint32_t j = 1; j < xmasLetters.size(); j++)
 		{
@@ -119,7 +101,7 @@ bool IsXShapedMas(const std::vector<std::string>& letterSoup, const uint32_t x, 
 	std::array<uint8_t, 4> cornerLetters;
 	for (unsigned i = 0; i < corners.size(); i++)
 	{
-		Point cornerPos(x + corners[i].x, y + corners[i].y);
+		Point2D cornerPos(x + corners[i].x, y + corners[i].y);
 
 		if (!cornerPos.IsInRangeOf(letterSoup))
 			return false;
