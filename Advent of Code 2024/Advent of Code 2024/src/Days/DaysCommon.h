@@ -1,4 +1,7 @@
 #pragma once
+#include "../Array2D.h"
+#include "../Point2D.h"
+
 #include <functional>
 #include <algorithm>
 #include <concepts>
@@ -14,49 +17,6 @@
 #include <array>
 #include <map>
 #include <set>
-
-template<typename T>
-concept Subscriptable = requires(T cls, size_t idx)
-{
-	{ cls[idx] };
-};
-
-
-struct Point2D
-{
-	int32_t x;
-	int32_t y;
-
-
-	const Point2D operator+(const Point2D& rhs) const
-	{
-		return Point2D(x + rhs.x, y + rhs.y);
-	}
-
-	Point2D& operator+=(const Point2D& rhs)
-	{
-		x += rhs.x;
-		y += rhs.y;
-
-		return *this;
-	}
-
-	bool operator<(const Point2D& rhs) const
-	{
-		return x < rhs.x || (x == rhs.x && y < rhs.y);
-	}
-
-	bool operator==(const Point2D& rhs) const
-	{
-		return x == rhs.x && y == rhs.y;
-	}
-
-	template <Subscriptable T>
-	bool IsInRangeOf(const T& cointainer2D) const
-	{
-		return y >= 0 && y < cointainer2D.size() && x >= 0 && x < cointainer2D[0].size();
-	}
-};
 
 
 template <typename T>
