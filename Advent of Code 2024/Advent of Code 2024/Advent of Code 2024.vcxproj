@@ -134,7 +134,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Array2D.h" />
+    <ClInclude Include="src\Matrix.h" />
     <ClInclude Include="src\Days\Day1.h" />
     <ClInclude Include="src\Days\Day11.h" />
     <ClInclude Include="src\Days\Day2.h" />

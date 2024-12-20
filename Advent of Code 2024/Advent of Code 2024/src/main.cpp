@@ -2,6 +2,6 @@
 
 int main(void)
 {
-	SolveDay8Part1();
+	SolveDay8Part2();
 	return 0;
 }

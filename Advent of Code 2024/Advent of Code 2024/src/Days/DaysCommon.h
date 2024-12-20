@@ -1,6 +1,6 @@
 #pragma once
-#include "../Array2D.h"
 #include "../Point2D.h"
+#include "../Matrix.h"
 
 #include <functional>
 #include <algorithm>

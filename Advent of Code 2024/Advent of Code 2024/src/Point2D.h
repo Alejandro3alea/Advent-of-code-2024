@@ -40,6 +40,14 @@ struct Point2D
 		return *this;
 	}
 
+	Point2D& operator-=(const Point2D& rhs)
+	{
+		x -= rhs.x;
+		y -= rhs.y;
+
+		return *this;
+	}
+
 	bool operator<(const Point2D& rhs) const
 	{
 		return x < rhs.x || (x == rhs.x && y < rhs.y);
