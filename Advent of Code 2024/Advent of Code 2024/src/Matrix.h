@@ -31,6 +31,26 @@ struct Matrix
 		arr[idx].push_back(val);
 	}
 
+	size_t size() const
+	{
+		return arr.size();
+	}
+
+	size_t row_size() const
+	{
+		return arr.empty() ? 0 : arr[0].size();
+	}
+
+	auto begin() const
+	{
+		return arr.begin();
+	}
+
+	auto end() const
+	{
+		return arr.end();
+	}
+
 	size_t count_of(const T& val)
 	{
 		size_t count = 0;
@@ -42,6 +62,7 @@ struct Matrix
 		return count;
 	}
 
+#pragma region Operators
 	std::vector<T>& operator[](const size_type& idx)
 	{
 		return arr[idx];
@@ -51,6 +72,17 @@ struct Matrix
 	{
 		return arr[idx.y][idx.x];
 	}
+
+	const std::vector<T>& operator[](const size_type& idx) const
+	{
+		return arr[idx];
+	}
+
+	const T& operator[](const Point2D& idx) const
+	{
+		return arr[idx.y][idx.x];
+	}
+#pragma endregion
 
 private:
 	std::vector<std::vector<T>> arr;
