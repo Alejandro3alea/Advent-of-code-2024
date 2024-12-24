@@ -7,7 +7,9 @@
 #include <concepts>
 #include <optional>
 #include <utility>
+#include <ranges>
 #include <regex>
+
 
 #include <iostream>
 #include <sstream>

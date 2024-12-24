@@ -22,6 +22,7 @@ struct Point2D
 	int32_t y;
 
 
+#pragma region ArithmeticOperators
 	const Point2D operator+(const Point2D& rhs) const
 	{
 		return Point2D(x + rhs.x, y + rhs.y);
@@ -48,15 +49,54 @@ struct Point2D
 		return *this;
 	}
 
+	Point2D operator*(const int32_t rhs) const
+	{
+		return Point2D(x * rhs, y * rhs);
+	}
+
+	Point2D& operator*=(const int32_t rhs)
+	{
+		x *= rhs;
+		y *= rhs;
+
+		return *this;
+	}
+
+	Point2D operator/(const int32_t rhs) const
+	{
+		return Point2D(x / rhs, y / rhs);
+	}
+
+	Point2D& operator/=(const int32_t rhs)
+	{
+		x /= rhs;
+		y /= rhs;
+
+		return *this;
+	}
+
+	Point2D operator%(const Point2D& rhs) const
+	{
+		return Point2D(x % rhs.x, y % rhs.y);
+	}
+
+	Point2D& operator%=(const Point2D& rhs)
+	{
+		x %= rhs.x;
+		y %= rhs.y;
+
+		return *this;
+	}
+#pragma endregion
+	
+#pragma region LogicalOperators
 	bool operator<(const Point2D& rhs) const
 	{
 		return x < rhs.x || (x == rhs.x && y < rhs.y);
 	}
 
-	bool operator==(const Point2D& rhs) const
-	{
-		return x == rhs.x && y == rhs.y;
-	}
+	bool operator==(const Point2D& rhs) const = default;
+#pragma endregion
 
 	bool IsInRangeOf(const int32_t width, const int32_t height) const
 	{

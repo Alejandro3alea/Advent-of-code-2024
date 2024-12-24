@@ -2,6 +2,7 @@
 #include "Point2D.h"
 
 #include <vector>
+#include <iostream>
 
 template <std::equality_comparable T>
 struct Matrix
@@ -10,11 +11,16 @@ struct Matrix
 	using size_type = typename std::vector<T>::size_type;
 
 	Matrix() = default;
-	Matrix(const size_type& width, const size_type& height) :
-		arr({ height, {width} }) {}
+	Matrix(const size_type& width, const size_type& height) 
+	{
+		arr.resize(height);
+		for (auto& row : arr)
+			row.resize(width);
+	}
 
 	Matrix(const size_type& width, const size_type& height, const value_type& val) :
 		arr({ height, { width, val } }) {}
+
 
 	void push_row(const std::vector<T>& val)
 	{
@@ -87,3 +93,19 @@ struct Matrix
 private:
 	std::vector<std::vector<T>> arr;
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& mtx) 
+{
+	for (uint8_t y = 0; y < mtx.size(); y++)
+	{
+		for (uint8_t x = 0; x < mtx.row_size(); x++)
+		{
+			os << mtx[y][x];
+		}
+
+		os << std::endl;
+	}
+
+	return os;
+}
