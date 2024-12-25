@@ -22,7 +22,7 @@ struct Matrix
 		arr({ height, { width, val } }) {}
 
 
-	void push_row(const std::vector<T>& val)
+	void push_row(const std::vector<T>& val = std::vector<T>())
 	{
 		arr.push_back(val);
 	}
@@ -68,6 +68,18 @@ struct Matrix
 		return count;
 	}
 
+	Point2D find_first_of(const T& val)
+	{
+		for (uint32_t y = 0; y < size(); y++)
+		{
+			for (uint32_t x = 0; x < row_size(); x++)
+				if (arr[y][x] == val)
+					return Point2D(x, y);
+		}
+
+		return Point2D(-1, -1); // @TODO: Invalid location
+	}
+
 #pragma region Operators
 	std::vector<T>& operator[](const size_type& idx)
 	{
@@ -88,24 +100,23 @@ struct Matrix
 	{
 		return arr[idx.y][idx.x];
 	}
+
+	friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& mtx)
+	{
+		for (uint8_t y = 0; y < mtx.size(); y++)
+		{
+			for (uint8_t x = 0; x < mtx.row_size(); x++)
+			{
+				os << mtx[y][x];
+			}
+
+			os << std::endl;
+		}
+
+		return os;
+	}
 #pragma endregion
 
 private:
 	std::vector<std::vector<T>> arr;
 };
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const Matrix<T>& mtx) 
-{
-	for (uint8_t y = 0; y < mtx.size(); y++)
-	{
-		for (uint8_t x = 0; x < mtx.row_size(); x++)
-		{
-			os << mtx[y][x];
-		}
-
-		os << std::endl;
-	}
-
-	return os;
-}

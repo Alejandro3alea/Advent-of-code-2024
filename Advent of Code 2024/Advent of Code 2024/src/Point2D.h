@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-
+#include <iostream>
 
 template<typename T>
 concept Subscriptable = requires(T cls, size_t idx)
@@ -97,6 +97,13 @@ struct Point2D
 
 	bool operator==(const Point2D& rhs) const = default;
 #pragma endregion
+
+	friend std::ostream& operator<<(std::ostream& os, const Point2D& point)
+	{
+		os << point.x << ", " << point.y;
+		return os;
+	}
+
 
 	bool IsInRangeOf(const int32_t width, const int32_t height) const
 	{
