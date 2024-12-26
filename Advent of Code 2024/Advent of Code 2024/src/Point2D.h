@@ -116,3 +116,14 @@ struct Point2D
 		return y >= 0 && y < cointainer2D.size() && x >= 0 && x < cointainer2D[0].size();
 	}
 };
+
+template<>
+struct std::hash<Point2D>
+{
+	size_t operator()(const Point2D& p) const noexcept
+	{
+		size_t h1 = std::hash<int32_t>{}(p.x);
+		size_t h2 = std::hash<int32_t>{}(p.y);
+		return h1 ^ (h2 << 1);
+	}
+};

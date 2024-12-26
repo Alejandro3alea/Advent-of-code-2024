@@ -10,13 +10,13 @@ void SolveDayXPart1()
 		return;
 	}
 
-	uint32_t result = 0;
 
 	std::string line;
 	while (std::getline(file, line))
 	{
 	}
 
+	uint32_t result = 0;
 	std::cout << "The solution is " << result << "!" << std::endl;
 }
 
@@ -33,12 +33,12 @@ void SolveDayXPart2()
 		return;
 	}
 
-	uint32_t result = 0;
 
 	std::string line;
 	while (std::getline(file, line))
 	{
 	}
 
+	uint32_t result = 0;
 	std::cout << "The solution is " << result << "!" << std::endl;
 }
