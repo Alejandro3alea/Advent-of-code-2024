@@ -141,6 +141,7 @@
     <ClInclude Include="src\Days\Day15.h" />
     <ClInclude Include="src\Days\Day16.h" />
     <ClInclude Include="src\Days\Day17.h" />
+    <ClInclude Include="src\Days\Day18.h" />
     <ClInclude Include="src\Matrix.h" />
     <ClInclude Include="src\Days\Day1.h" />
     <ClInclude Include="src\Days\Day11.h" />

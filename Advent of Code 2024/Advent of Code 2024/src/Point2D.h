@@ -105,15 +105,22 @@ struct Point2D
 	}
 
 
-	bool IsInRangeOf(const int32_t width, const int32_t height) const
+	bool IsInBoundsOf(const int32_t width, const int32_t height) const
 	{
 		return y >= 0 && y < height && x >= 0 && x < width;
 	}
 
 	template <BidimensionalArray T>
-	bool IsInRangeOf(const T& cointainer2D) const
+	bool IsInBoundsOf(const T& cointainer2D) const
 	{
 		return y >= 0 && y < cointainer2D.size() && x >= 0 && x < cointainer2D[0].size();
+	}
+
+	float Dist(const Point2D& rhs) const
+	{
+		const float vecX = x - rhs.x;
+		const float vecY = y - rhs.y;
+		return std::sqrt(vecX * vecX + vecY + vecY);
 	}
 };
 

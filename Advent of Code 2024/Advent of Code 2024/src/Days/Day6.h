@@ -36,12 +36,12 @@ void ProcessPlayerTraversal(MapData& mapData, const Point2D& playerStartPos)
 {
 	Point2D playerPos = playerStartPos;
 	size_t currDir = 0;
-	while (playerPos.IsInRangeOf(mapData))
+	while (playerPos.IsInBoundsOf(mapData))
 	{
 		SetValue(mapData, playerPos, traversedC);
 
 		const Point2D nextPos = playerPos + directions[currDir];
-		if (!nextPos.IsInRangeOf(mapData))
+		if (!nextPos.IsInBoundsOf(mapData))
 			break;
 
 		if (const uint8_t nextC = GetValue(mapData, nextPos); nextC == obstacleC)
@@ -126,10 +126,10 @@ bool DoesNewObstacleCreateALoop(const Point2D& newObs, const Point2D& playerStar
 	std::set<CollisionData> metObstacles;
 	size_t currDir = 0;
 	Point2D playerPos = playerStartPos;
-	while (playerPos.IsInRangeOf(mapData))
+	while (playerPos.IsInBoundsOf(mapData))
 	{
 		const Point2D nextPos = playerPos + directions[currDir];
-		if (!nextPos.IsInRangeOf(mapData))
+		if (!nextPos.IsInBoundsOf(mapData))
 			return false;
 
 		const uint8_t nextC = GetValue(mapData, nextPos);

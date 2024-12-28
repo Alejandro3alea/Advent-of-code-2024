@@ -39,7 +39,7 @@ uint32_t GetXmasCountFromPos(const std::vector<std::string>& letterSoup, const u
 		for (uint32_t j = 1; j < xmasLetters.size(); j++)
 		{
 			currPos += directions[i];
-			if (!currPos.IsInRangeOf(letterSoup) || letterSoup[currPos.y][currPos.x] != xmasLetters[j])
+			if (!currPos.IsInBoundsOf(letterSoup) || letterSoup[currPos.y][currPos.x] != xmasLetters[j])
 			{
 				isValidXmas = false;
 				break;
@@ -103,7 +103,7 @@ bool IsXShapedMas(const std::vector<std::string>& letterSoup, const uint32_t x, 
 	{
 		Point2D cornerPos(x + corners[i].x, y + corners[i].y);
 
-		if (!cornerPos.IsInRangeOf(letterSoup))
+		if (!cornerPos.IsInBoundsOf(letterSoup))
 			return false;
 
 		switch (const uint8_t cornerChar = letterSoup[cornerPos.y][cornerPos.x]; cornerChar)

@@ -46,10 +46,10 @@ void SolveDay8Part1()
 				const Point2D newLPos = lPos - dir;
 				const Point2D newRPos = rPos + dir;
 
-				if (newLPos.IsInRangeOf(width, height))
+				if (newLPos.IsInBoundsOf(width, height))
 					antinodes[newLPos] = true;
 
-				if (newRPos.IsInRangeOf(width, height))
+				if (newRPos.IsInBoundsOf(width, height))
 					antinodes[newRPos] = true;
 			}
 		}
@@ -108,13 +108,13 @@ void SolveDay8Part2()
 				Point2D newLPos = lPos;
 				Point2D newRPos = rPos;
 
-				while (newLPos.IsInRangeOf(width, height))
+				while (newLPos.IsInBoundsOf(width, height))
 				{
 					antinodes[newLPos] = true;
 					newLPos -= dir;
 				}
 
-				while (newRPos.IsInRangeOf(width, height))
+				while (newRPos.IsInBoundsOf(width, height))
 				{
 					antinodes[newRPos] = true;
 					newRPos += dir;

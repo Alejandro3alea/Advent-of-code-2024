@@ -6,7 +6,7 @@ const std::array<Point2D, 4> directions = { Point2D(0, 1), Point2D(-1, 0),
 
 std::set<Point2D> GetTrailheads(const Matrix<int8_t>& map, const int8_t prevNum, const Point2D& pos)
 {
-	if (!pos.IsInRangeOf(map))
+	if (!pos.IsInBoundsOf(map))
 		return std::set<Point2D>();
 	
 	const uint8_t c = map[pos];
@@ -67,7 +67,7 @@ void SolveDay10Part1()
 
 uint32_t GetTrailheadRoutes(const Matrix<int8_t>& map, const int8_t prevNum, const Point2D& pos)
 {
-	if (!pos.IsInRangeOf(map))
+	if (!pos.IsInBoundsOf(map))
 		return 0;
 
 	const uint8_t c = map[pos];

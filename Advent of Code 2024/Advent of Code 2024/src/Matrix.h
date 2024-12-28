@@ -18,8 +18,12 @@ struct Matrix
 			row.resize(width);
 	}
 
-	Matrix(const size_type& width, const size_type& height, const value_type& val) :
-		arr({ height, { width, val } }) {}
+	Matrix(const size_type& width, const size_type& height, const value_type& val)
+	{
+		arr.resize(height);
+		for (auto& row : arr)
+			row.resize(width, val);
+	}
 
 
 	void push_row(const std::vector<T>& val = std::vector<T>())
