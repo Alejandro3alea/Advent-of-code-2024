@@ -1,7 +1,7 @@
-#include "Days/Day18.h"
+#include "Days/Day19.h"
 
 int main(void)
 {
-	SolveDay18Part2();
+	SolveDay19Part2();
 	return 0;
 }

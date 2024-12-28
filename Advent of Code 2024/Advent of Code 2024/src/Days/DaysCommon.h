@@ -22,6 +22,7 @@
 #include <set>
 #include <unordered_set>
 #include <queue>
+#include <bitset>
 
 
 template <typename T>
@@ -42,4 +43,18 @@ template <Subscriptable T, typename U>
 void SetValue(T& container2D, const Point2D& p, const U& val)
 {
 	container2D[p.y][p.x] = val;
+}
+
+std::vector<std::string> SplitStringBy(const std::string& input) 
+{
+    std::vector<std::string> result;
+    std::stringstream ss(input);
+    std::string token;
+
+    // Use getline to extract substrings separated by commas
+    while (std::getline(ss, token, ',')) {
+        result.push_back(token);
+    }
+
+    return result;
 }
