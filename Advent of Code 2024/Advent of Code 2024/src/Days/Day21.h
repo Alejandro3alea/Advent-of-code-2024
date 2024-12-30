@@ -3,7 +3,7 @@
 
 using InstructionMap = std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::string>>;
 
-using InstructionData = std::unordered_map<uint8_t, InstructionMap>;
+using InstructionData = std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::unordered_map<uint8_t, uint64_t>>>;
 
 using InstructionPositions = std::unordered_map<uint8_t, Point2D>;
 
@@ -26,36 +26,100 @@ InstructionPositions GetNumericPositions()
 	return numericPositions;
 }
 
-std::string DirectionsToStr(const std::vector<Point2D>& directions)
+/*
+* From: https://www.reddit.com/r/adventofcode/comments/1hja685/2024_day_21_here_are_some_examples_and_hints_for/
+Line 4: 379A
+v<<A^>>AvA^Av<A<AA^>>AAvA^<A>AAvA^Av<A^>AA<A>Av<<A>A^>AAAvA^<A>A
+   <   A > A  v <<   AA >  ^ AA > A  v  AA ^ A   < v  AAA >  ^ A
+	   ^   A         <<      ^^   A     >>   A        vvv      A
+		   3                      7          9                 A
+string length=64
+Complexity: 379 x 64 = 24256
+
+Line 4: 379A
+v<<A^>>AvA^Av<<A^>>AAv<A<A^>>AAvAA^<A>Av<A^>AA<A>Av<A<A^>>AAA<Av>A^A
+   <   A > A   <   AA  v <   AA >>  ^ A  v  AA ^ A  v <   AAA ^  > A
+	   ^   A       ^^        <<       A     >>   A        vvv      A
+		   3                          7          9                 A
+string length=68
+Complexity: 379 x 68 = 25772
+*/
+std::vector<std::string> GetPossibleCombinations(const std::string& str, InstructionPositions& numPos)
 {
-	std::string result;
-	for (const Point2D& dir : directions)
+	std::vector<std::string> possibleCombinations;
+
+	const uint8_t maxComboVal = 0b10000;
+	for (uint8_t comboVal = 0; comboVal < maxComboVal; comboVal++)
 	{
-		const uint8_t hChar = dir.x < 0 ? '<' : '>';
-		const uint8_t vChar = dir.y < 0 ? '^' : 'v';
-		const uint8_t hMax = std::abs(dir.x);
-		const uint8_t vMax = std::abs(dir.y);
+		bool isValidCombination = true;
+		std::string combination;
 
-		for (uint8_t i = 0; i < hMax; i++)
-			result.push_back(hChar);
-		for (uint8_t i = 0; i < vMax; i++)
-			result.push_back(vChar);
+		uint8_t prevC = 'A';
+		for (uint8_t cIdx = 0; cIdx < str.size(); cIdx++)
+		{
+			const uint8_t& c = str[cIdx];
+			if (prevC == c)
+			{
+				combination.push_back('A');
+				continue;
+			}
 
-		result.push_back('A');
+			const Point2D startPos = numPos[prevC];
+			const Point2D endPos = numPos[c];
+			const Point2D dir = endPos - startPos;
+
+			const uint8_t hChar = dir.x < 0 ? '<' : '>';
+			const uint8_t vChar = dir.y < 0 ? '^' : 'v';
+			const uint8_t hMax = std::abs(dir.x);
+			const uint8_t vMax = std::abs(dir.y);
+
+			// Corner case to avoid hitting OOB
+			auto doesGoOOB = [&](bool isCheckStart) {
+				return (isCheckStart && startPos.x + dir.x == 0 && startPos.y == 3) || // Either 0 or A go to a left number
+					(!isCheckStart && dir.x > 0 && startPos.x == 0 && endPos.y == 3); // Either a left number goes to 0 or A
+			};
+
+
+			std::string currResult;
+			bool comboBit = comboVal & 1 << cIdx;
+			if (comboBit && !doesGoOOB(true))
+			{
+				for (uint8_t i = 0; i < hMax; i++)
+					currResult.push_back(hChar);
+				for (uint8_t i = 0; i < vMax; i++)
+					currResult.push_back(vChar);
+			}
+
+			// Swapped order
+			else if (!comboBit && !doesGoOOB(false))
+			{
+				for (uint8_t i = 0; i < vMax; i++)
+					currResult.push_back(vChar);
+				for (uint8_t i = 0; i < hMax; i++)
+					currResult.push_back(hChar);
+			}
+
+			if (currResult.empty())
+			{
+				isValidCombination = false;
+				break;
+			}
+
+			combination += currResult;
+			combination.push_back('A');
+
+			prevC = c;
+		}
+
+		if (isValidCombination)
+			possibleCombinations.push_back(combination);
 	}
 
-	return result;
+	return possibleCombinations;
 }
 
 InstructionMap GetDirectionalPositions()
 {
-	/*InstructionPositions directionalPositions = {
-		{ '<', Point2D() },
-		{ 'v', Point2D(0, 1) },
-		{ '^', Point2D(1, 1) },
-		{ '>', Point2D(2, 0) },
-		{ 'A', Point2D(2, 1) }
-	};*/
 	InstructionMap directionalMap;
 	directionalMap['^']['^'] = "";
 	directionalMap['^']['<'] = "v<";
@@ -97,20 +161,20 @@ bool IsValueInTable(const uint8_t from, const uint8_t to, const uint32_t itCount
 		dpTable[itCount][from].find(to) != dpTable[itCount][from].end();
 }
 
-std::string GetSequence(const uint8_t from, const uint8_t to, const uint32_t itCount, InstructionMap& dirPos, InstructionData& dpTable)
+int64_t GetSequenceCount(const uint8_t from, const uint8_t to, const uint32_t itCount, InstructionMap& dirPos, InstructionData& dpTable)
 {
 	if (IsValueInTable(from, to, itCount, dpTable))
 		return dpTable[itCount][from][to];
 
 	if (itCount == 0)
-		return dirPos[from][to] + 'A';
+		return dirPos[from][to].size() + 1;
 
-	std::string result;
+	int64_t result = 0;
 	uint8_t currC = 'A';
-	std::string currSeq = dirPos[from][to];
+	std::string currSeq = dirPos[from][to] + 'A';
 	for (const uint8_t& c : currSeq)
 	{
-		result += GetSequence(currC, c, itCount - 1, dirPos, dpTable);
+		result += GetSequenceCount(currC, c, itCount - 1, dirPos, dpTable);
 		currC = c;
 	}
 	dpTable[itCount][from][to] = result;
@@ -131,7 +195,7 @@ void SolveDay21Part1()
 	InstructionMap dirPos = GetDirectionalPositions();
 	InstructionData dpTable;
 
-	uint32_t recursionCount = 1;
+	uint32_t recursionCount = 25;
 
 	uint64_t result = 0;
 	std::string line;
@@ -140,40 +204,33 @@ void SolveDay21Part1()
 		uint64_t val;
 		std::istringstream iss(line);
 		iss >> val;
-		
-		uint8_t currChar = 'A';
-		std::vector<Point2D> directions;
-		for (const uint8_t c : line)
-		{
-			Point2D currDir = numPos[c] - numPos[currChar];
-			directions.push_back(currDir);
-			currChar = c;
-		}
 
-		currChar = 'A';
-		for (recursionCount = 0; recursionCount < 3; recursionCount++)
+		uint64_t minMoves = std::numeric_limits<uint64_t>::max();
+		std::vector<std::string> combinations = GetPossibleCombinations(line, numPos);
+		for (const std::string& numCommands : combinations)
 		{
-			std::string currResult;
-			std::string numCommands = DirectionsToStr(directions);
+			uint8_t currChar = 'A';
+			uint64_t currResult = 0;
 			if (recursionCount == 0)
-				currResult = numCommands;
+				currResult = numCommands.size();
 			else
 			{
 				for (const uint8_t& c : numCommands)
 				{
-					currResult += GetSequence(currChar, c, recursionCount - 1, dirPos, dpTable);
+					currResult += GetSequenceCount(currChar, c, recursionCount - 1, dirPos, dpTable);
 					currChar = c;
 				}
 			}
 
-			std::cout << currResult << std::endl;
-			uint64_t strSize = currResult.size();
-			std::cout << strSize << " * " << val << " = " << strSize * val << std::endl;
-			result += strSize * val;
+			minMoves = std::min(minMoves, currResult);
 		}
 
+		std::cout << minMoves << " * " << val << " = " << minMoves * val << std::endl;
+		result += minMoves * val;
 	}
 
+	//154115708116294
+	//175343041201758
 	std::cout << "The solution is " << result << "!" << std::endl;
 }
 
