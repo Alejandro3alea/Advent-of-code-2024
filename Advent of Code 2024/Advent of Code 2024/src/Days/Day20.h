@@ -1,9 +1,9 @@
 #pragma once
 #include "DaysCommon.h"
 
-void SolveDay12Part1()
+void SolveDay20Part1()
 {
-	std::ifstream file("data/Day 12/Data.txt");
+	std::ifstream file("data/Day X/Data.txt");
 	if (!file || !file.is_open())
 	{
 		std::cout << "The solution is within your heart (DATA NOT FOUND!)." << std::endl;
@@ -24,9 +24,9 @@ void SolveDay12Part1()
 ///
 ///////////////////////////////////////////////////////////////////////////
 
-void SolveDay12Part2()
+void SolveDay20Part2()
 {
-	std::ifstream file("data/Day 12/Data.txt");
+	std::ifstream file("data/Day X/Data.txt");
 	if (!file || !file.is_open())
 	{
 		std::cout << "The solution is within your heart (DATA NOT FOUND!)." << std::endl;

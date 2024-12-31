@@ -143,7 +143,11 @@
     <ClInclude Include="src\Days\Day17.h" />
     <ClInclude Include="src\Days\Day18.h" />
     <ClInclude Include="src\Days\Day19.h" />
+    <ClInclude Include="src\Days\Day20.h" />
     <ClInclude Include="src\Days\Day21.h" />
+    <ClInclude Include="src\Days\Day22.h" />
+    <ClInclude Include="src\Days\Day23.h" />
+    <ClInclude Include="src\Days\Day24.h" />
     <ClInclude Include="src\Days\Day25.h" />
     <ClInclude Include="src\Matrix.h" />
     <ClInclude Include="src\Days\Day1.h" />
