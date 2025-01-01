@@ -120,6 +120,7 @@ uint32_t GetValueFromTables(std::vector<MarketTable>& tableList,
 uint32_t GetMostBananas(std::vector<MarketTable>& tables)
 {
 	uint32_t maxValue = 0;
+	// Not optimal at all since this is kinda brute forcy
 	for (int8_t a = -9; a < 10; a++)
 	{
 		for (int8_t b = -9; b < 10; b++)
@@ -153,11 +154,9 @@ void SolveDay22Part2()
 	{
 		std::istringstream iss(line);
 		iss >> secretNumber;
-		std::cout << secretNumber << std::endl;
 		seqTable.push_back(GetSequencesFromNumber(secretNumber));
 	}
 
-	std::cout << "Computing..." << std::endl;
 	uint32_t result = GetMostBananas(seqTable);
 	std::cout << "The solution is " << result << "!" << std::endl;
 }
