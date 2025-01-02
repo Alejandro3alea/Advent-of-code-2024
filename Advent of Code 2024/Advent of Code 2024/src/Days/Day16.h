@@ -21,7 +21,9 @@ std::vector<size_t> GetAlternativeDirections(const Matrix<uint8_t>& lab, const P
 }
 
 // Too unperformant, recurses too much
-uint32_t Step(const Matrix<uint8_t>& lab, const Point2D& pos, const size_t dir, const Point2D& endPos, const uint32_t cost, const bool shouldRotate, std::unordered_set<Point2D> visited)
+uint32_t Step(const Matrix<uint8_t>& lab, const Point2D& pos, const size_t dir, 
+	const Point2D& endPos, const uint32_t cost, const bool shouldRotate, 
+	std::unordered_set<Point2D> visited)
 {
 	if (pos == endPos)
 		return cost;
@@ -30,20 +32,19 @@ uint32_t Step(const Matrix<uint8_t>& lab, const Point2D& pos, const size_t dir, 
 	if (c == '#' || visited.contains(pos))
 		return std::numeric_limits<uint32_t>::max();
 
-	uint32_t bestCost = std::numeric_limits<uint32_t>::max();
+	visited.insert(pos);
 
 	std::cout << pos << " + " << directions[dir] << std::endl;
 
+	uint32_t bestCost = std::numeric_limits<uint32_t>::max();
 	if (shouldRotate)
 	{
 		auto altDirs = GetAlternativeDirections(lab, pos, dir);
 		for (size_t& altDir : altDirs)
 		{
-			bestCost = std::min(bestCost, Step(lab, pos, altDir, endPos, cost + 1000, false, visited));
+			bestCost = std::min(bestCost, Step(lab, pos + directions[altDir], altDir, endPos, cost + 1001, false, visited));
 		}
 	}
-
-	visited.insert(pos);
 
 	bestCost = std::min(bestCost, Step(lab, pos + directions[dir], dir, endPos, cost + 1, true, visited));
 	

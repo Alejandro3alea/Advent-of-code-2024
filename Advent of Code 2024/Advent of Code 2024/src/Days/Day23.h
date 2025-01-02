@@ -1,15 +1,15 @@
 #pragma once
 #include "DaysCommon.h"
 
-using NodeGraph = std::unordered_map<std::string, std::set<std::string>>;
+using NodeGraphPart1 = std::unordered_map<std::string, std::set<std::string>>;
 
-bool CheckIfNodeIsConnected(NodeGraph& graphs, const std::string& aNode, const std::string& bNode, const std::string& cNode)
+bool CheckIfNodeIsConnected(NodeGraphPart1& graphs, const std::string& aNode, const std::string& bNode, const std::string& cNode)
 {
 	return	graphs[aNode].find(cNode) != graphs[aNode].end() &&
 		graphs[bNode].find(cNode) != graphs[bNode].end();
 }
 
-bool Part1Check(NodeGraph& graphs, const std::string& aNode, const std::string& bNode, const std::string& cNode)
+bool Part1Check(NodeGraphPart1& graphs, const std::string& aNode, const std::string& bNode, const std::string& cNode)
 {
 	return	CheckIfNodeIsConnected(graphs, aNode, bNode, cNode) &&
 			(aNode.starts_with('t') || bNode.starts_with('t') || cNode.starts_with('t'));
@@ -24,7 +24,7 @@ void SolveDay23Part1()
 		return;
 	}
 
-	NodeGraph graphs;
+	NodeGraphPart1 graphs;
 
 	std::string line;
 	while (std::getline(file, line))
@@ -60,46 +60,43 @@ void SolveDay23Part1()
 ///
 ///////////////////////////////////////////////////////////////////////////
 
-void GetBiggestConnectionsOf(NodeGraph& graphs, const std::string& currVal, std::set<std::string>& connections)
+using NodeGraphPart2 = std::unordered_map<std::string, std::vector<std::string>>;
+
+void GetBiggestConnectionsOf(NodeGraphPart2& graphs, const std::string& node, const uint32_t i,
+	std::vector<std::string> connections, std::vector<std::string>& biggestNetwork)
 {
-	uint32_t result = 0;
-	for (const std::string& currNode : graphs[currVal])
+	if (i == graphs[node].size())
 	{
-		if (connections.find(currNode) == connections.end())
-		{
-			bool isValid = true;
-			for (const std::string& checkNode : connections)
-			{
-				if (graphs[currNode].find(checkNode) == graphs[currNode].end())
-				{
-					isValid = false;
-					break;
-				}
-			}
-			if (isValid)
-			{
-				connections.insert(currNode);
-				GetBiggestConnectionsOf(graphs, currNode, connections);
-			 }
-		}
+		if (biggestNetwork.size() < connections.size())
+			biggestNetwork = std::move(connections);
+
+		return;
 	}
+
+	GetBiggestConnectionsOf(graphs, node, i + 1, connections, biggestNetwork);
+
+	const std::string nextVal = graphs[node][i];
+	for (const std::string& n : connections)
+		if (std::ranges::find(graphs[nextVal], n) == graphs[nextVal].end())
+			return;
+
+	connections.push_back(nextVal);
+	GetBiggestConnectionsOf(graphs, node, i + 1, connections, biggestNetwork);
 }
 
-std::set<std::string> GetBiggestConnections(NodeGraph& graphs)
+std::vector<std::string> GetBiggestConnections(NodeGraphPart2& graphs)
 {
-	std::set<std::string> result;
+	std::vector<std::string> result;
 	for (auto& [node, connections] : graphs)
 	{
-		std::set<std::string> currConnections;
-		GetBiggestConnectionsOf(graphs, node, currConnections);
-		if (result.size() < currConnections.size())
-			result = std::move(currConnections);
+		std::vector<std::string> currConnections = { node };
+		GetBiggestConnectionsOf(graphs, node, 0, currConnections, result);
 	}
 
 	return result;
 }
 
-void PrintString(const std::set<std::string>& nodes)
+void PrintString(const std::vector<std::string>& nodes)
 {
 	for (const std::string& node : nodes)
 		std::cout << node << ",";
@@ -114,7 +111,7 @@ void SolveDay23Part2()
 		return;
 	}
 
-	NodeGraph graphs;
+	NodeGraphPart2 graphs;
 
 	std::string line;
 	while (std::getline(file, line))
@@ -124,11 +121,13 @@ void SolveDay23Part2()
 		std::getline(ss, lVal, '-');
 		std::getline(ss, rVal, '-');
 
-		graphs[lVal].insert(rVal);
-		graphs[rVal].insert(lVal);
+		graphs[lVal].push_back(rVal);
+		graphs[rVal].push_back(lVal);
 	}
 
-	std::set<std::string> nodes = GetBiggestConnections(graphs);
+	std::vector<std::string> nodes = GetBiggestConnections(graphs);
+	std::sort(nodes.begin(), nodes.end());
+
 	std::cout << "The solution is: ";
 	PrintString(nodes);
 }
