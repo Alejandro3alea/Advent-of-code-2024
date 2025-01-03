@@ -2,10 +2,80 @@
 #include "DaysCommon.h"
 
 using InstructionMap = std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::string>>;
-
 using InstructionData = std::unordered_map<uint8_t, std::unordered_map<uint8_t, std::unordered_map<uint8_t, uint64_t>>>;
-
 using InstructionPositions = std::unordered_map<uint8_t, Point2D>;
+
+InstructionMap GetDirectionalPositions()
+{
+	InstructionMap directionalMap;
+	directionalMap['^']['^'] = "";
+	directionalMap['^']['<'] = "v<";
+	directionalMap['^']['v'] = "v";
+	directionalMap['^']['>'] = "v>";
+	directionalMap['^']['A'] = ">";
+
+	directionalMap['<']['^'] = ">^";
+	directionalMap['<']['<'] = "";
+	directionalMap['<']['v'] = ">";
+	directionalMap['<']['>'] = ">>";
+	directionalMap['<']['A'] = ">>^";
+
+	directionalMap['v']['^'] = "^";
+	directionalMap['v']['<'] = "<";
+	directionalMap['v']['v'] = "";
+	directionalMap['v']['>'] = ">";
+	directionalMap['v']['A'] = ">^";
+
+	directionalMap['>']['^'] = "^<";
+	directionalMap['>']['<'] = "<<";
+	directionalMap['>']['v'] = "<";
+	directionalMap['>']['>'] = "";
+	directionalMap['>']['A'] = "^";
+
+	directionalMap['A']['^'] = "<";
+	directionalMap['A']['<'] = "v<<";
+	directionalMap['A']['v'] = "<v";
+	directionalMap['A']['>'] = "v";
+	directionalMap['A']['A'] = "";
+
+	return directionalMap;
+}
+
+InstructionMap GetAlternativeDirectionalPositions()
+{
+	InstructionMap directionalMap;
+	directionalMap['^']['^'] = "";
+	directionalMap['^']['<'] = "v<";
+	directionalMap['^']['v'] = "v";
+	directionalMap['^']['>'] = "v>";
+	directionalMap['^']['A'] = ">";
+
+	directionalMap['<']['^'] = ">^";
+	directionalMap['<']['<'] = "";
+	directionalMap['<']['v'] = ">";
+	directionalMap['<']['>'] = ">>";
+	directionalMap['<']['A'] = ">^>";
+
+	directionalMap['v']['^'] = "^";
+	directionalMap['v']['<'] = "<";
+	directionalMap['v']['v'] = "";
+	directionalMap['v']['>'] = ">";
+	directionalMap['v']['A'] = ">^";
+
+	directionalMap['>']['^'] = "^<";
+	directionalMap['>']['<'] = "<<";
+	directionalMap['>']['v'] = "<";
+	directionalMap['>']['>'] = "";
+	directionalMap['>']['A'] = "^";
+
+	directionalMap['A']['^'] = "<";
+	directionalMap['A']['<'] = "<v<";
+	directionalMap['A']['v'] = "<v";
+	directionalMap['A']['>'] = "v";
+	directionalMap['A']['A'] = "";
+
+	return directionalMap;
+}
 
 InstructionPositions GetNumericPositions()
 {
@@ -118,41 +188,11 @@ std::vector<std::string> GetPossibleCombinations(const std::string& str, Instruc
 	return possibleCombinations;
 }
 
-InstructionMap GetDirectionalPositions()
-{
-	InstructionMap directionalMap;
-	directionalMap['^']['^'] = "";
-	directionalMap['^']['<'] = "v<";
-	directionalMap['^']['v'] = "v";
-	directionalMap['^']['>'] = "v>";
-	directionalMap['^']['A'] = ">";
 
-	directionalMap['<']['^'] = ">^";
-	directionalMap['<']['<'] = "";
-	directionalMap['<']['v'] = ">";
-	directionalMap['<']['>'] = ">>";
-	directionalMap['<']['A'] = ">>^";
 
-	directionalMap['v']['^'] = "^";
-	directionalMap['v']['<'] = "<";
-	directionalMap['v']['v'] = "";
-	directionalMap['v']['>'] = ">";
-	directionalMap['v']['A'] = ">^";
-
-	directionalMap['>']['^'] = "<^";
-	directionalMap['>']['<'] = "<<";
-	directionalMap['>']['v'] = "<";
-	directionalMap['>']['>'] = "";
-	directionalMap['>']['A'] = "^";
-
-	directionalMap['A']['^'] = "<";
-	directionalMap['A']['<'] = "v<<";
-	directionalMap['A']['v'] = "<v";
-	directionalMap['A']['>'] = "v";
-	directionalMap['A']['A'] = "";
-
-	return directionalMap;
-}
+InstructionPositions numPos = GetNumericPositions();
+InstructionMap dirPos = GetDirectionalPositions();
+InstructionMap altDirPos = GetAlternativeDirectionalPositions();
 
 bool IsValueInTable(const uint8_t from, const uint8_t to, const uint32_t itCount, InstructionData& dpTable)
 {
@@ -161,20 +201,22 @@ bool IsValueInTable(const uint8_t from, const uint8_t to, const uint32_t itCount
 		dpTable[itCount][from].find(to) != dpTable[itCount][from].end();
 }
 
-int64_t GetSequenceCount(const uint8_t from, const uint8_t to, const uint32_t itCount, InstructionMap& dirPos, InstructionData& dpTable)
+int64_t GetSequenceCount(const uint8_t from, const uint8_t to, const uint32_t itCount, InstructionMap& dirTable, InstructionData& dpTable)
 {
 	if (IsValueInTable(from, to, itCount, dpTable))
 		return dpTable[itCount][from][to];
 
 	if (itCount == 0)
-		return dirPos[from][to].size() + 1;
+		return dirTable[from][to].size() + 1;
 
 	int64_t result = 0;
 	uint8_t currC = 'A';
-	std::string currSeq = dirPos[from][to] + 'A';
+	std::string currSeq = dirTable[from][to] + 'A';
 	for (const uint8_t& c : currSeq)
 	{
-		result += GetSequenceCount(currC, c, itCount - 1, dirPos, dpTable);
+		int64_t currVal = GetSequenceCount(currC, c, itCount - 1, dirPos, dpTable);
+		int64_t altVal = GetSequenceCount(currC, c, itCount - 1, altDirPos, dpTable);
+		result += std::min(currVal, altVal);
 		currC = c;
 	}
 	dpTable[itCount][from][to] = result;
@@ -191,8 +233,58 @@ void SolveDay21Part1()
 		return;
 	}
 
-	InstructionPositions numPos = GetNumericPositions();
-	InstructionMap dirPos = GetDirectionalPositions();
+	InstructionData dpTable;
+
+	uint32_t recursionCount = 2;
+
+	uint64_t result = 0;
+	std::string line;
+	while (std::getline(file, line))
+	{
+		uint64_t val;
+		std::istringstream iss(line);
+		iss >> val;
+
+		uint64_t minMoves = std::numeric_limits<uint64_t>::max();
+		std::vector<std::string> combinations = GetPossibleCombinations(line, numPos);
+		for (const std::string& numCommands : combinations)
+		{
+			uint8_t currChar = 'A';
+			uint64_t currResult = 0;
+			if (recursionCount == 0)
+				currResult = numCommands.size();
+			else
+			{
+				for (const uint8_t& c : numCommands)
+				{
+					currResult += GetSequenceCount(currChar, c, recursionCount - 1, dirPos, dpTable);
+					currChar = c;
+				}
+			}
+
+			minMoves = std::min(minMoves, currResult);
+		}
+
+		std::cout << minMoves << " * " << val << " = " << minMoves * val << std::endl;
+		result += minMoves * val;
+	}
+
+	std::cout << "The solution is " << result << "!" << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////
+
+void SolveDay21Part2()
+{
+	std::ifstream file("data/Day 21/Data.txt");
+	if (!file || !file.is_open())
+	{
+		std::cout << "The solution is within your heart (DATA NOT FOUND!)." << std::endl;
+		return;
+	}
+
 	InstructionData dpTable;
 
 	uint32_t recursionCount = 25;
@@ -229,30 +321,5 @@ void SolveDay21Part1()
 		result += minMoves * val;
 	}
 
-	//154115708116294
-	//175343041201758
-	std::cout << "The solution is " << result << "!" << std::endl;
-}
-
-///////////////////////////////////////////////////////////////////////////
-///
-///////////////////////////////////////////////////////////////////////////
-
-void SolveDay21Part2()
-{
-	std::ifstream file("data/Day 21/Data.txt");
-	if (!file || !file.is_open())
-	{
-		std::cout << "The solution is within your heart (DATA NOT FOUND!)." << std::endl;
-		return;
-	}
-
-
-	std::string line;
-	while (std::getline(file, line))
-	{
-	}
-
-	uint32_t result = 0;
 	std::cout << "The solution is " << result << "!" << std::endl;
 }
